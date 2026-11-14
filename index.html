@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FHE Atlas · Bản đồ</title>
+<meta name="description" content="Atlas cực đoan thủy văn tương lai của Việt Nam: hạn, lũ, chuyển đổi hạn↔lũ và rủi ro tổng hợp đến 2100 theo kịch bản CMIP6.">
+<link rel="stylesheet" href="vendor/maplibre-gl/maplibre-gl.css">
+<link rel="stylesheet" href="assets/style.css">
+<script src="vendor/maplibre-gl/maplibre-gl.js"></script>
+<script type="module" src="assets/app.js"></script>
+</head>
+<body class="mappage">
+<header class="topbar">
+  <a class="brand" href="index.html"><span data-i18n="app.title">FHE Atlas</span><small data-i18n="app.subtitle">Cực đoan thủy văn Việt Nam đến 2100</small></a>
+  <nav class="nav" aria-label="Trang">
+    <a href="index.html" aria-current="page" data-i18n="nav.map">Bản đồ</a>
+    <a href="phuong-phap.html" data-i18n="nav.methods">Phương pháp</a>
+    <a href="du-lieu.html" data-i18n="nav.data">Dữ liệu</a>
+    <a href="gioi-thieu.html" data-i18n="nav.about">Giới thiệu</a>
+  </nav>
+  <div class="lang" data-i18n="nav.lang">VI · EN (sắp có)</div>
+</header>
+<main class="app">
+  <aside class="ctl" id="ctl" aria-label="Điều khiển bản đồ">
+    <div class="grp"><h2 data-i18n="ctl.layers">Lớp bản đồ</h2><div class="layers" id="layers"></div></div>
+    <div class="grp"><h2 data-i18n="ctl.mode">Hiển thị</h2><div class="seg" id="seg-mode"></div></div>
+    <div class="grp"><h2 data-i18n="ctl.ssp">Kịch bản phát thải</h2><div class="seg" id="seg-ssp"></div></div>
+    <div class="grp"><h2 data-i18n="ctl.period">Giai đoạn</h2><div class="seg" id="seg-period"></div></div>
+    <div class="grp"><h2 data-i18n="ctl.gcm">Mô hình khí hậu</h2><div class="seg" id="seg-gcm"></div></div>
+    <div class="grp"><h2 data-i18n="ctl.variant">Bản TWSA</h2><div class="seg" id="seg-variant"></div><p class="hint" id="hint"></p></div>
+    <div class="grp">
+      <form class="search" id="search" role="search">
+        <input id="q" list="places" autocomplete="off" aria-label="Tìm địa danh hoặc tọa độ">
+        <datalist id="places"></datalist>
+        <button type="submit" data-i18n="ctl.search.go">Tìm</button>
+      </form>
+      <p class="hint" id="search-msg" aria-live="polite"></p>
+    </div>
+    <div class="grp">
+      <button class="btn" type="button" id="dl-csv" data-i18n="dl.layer.csv">Tải lớp đang xem (CSV)</button>
+      <button class="btn" type="button" id="dl-geojson" data-i18n="dl.layer.geojson">Tải lớp đang xem (GeoJSON)</button>
+    </div>
+    <div class="meta" data-i18n="ctl.meta">Lưới 0,25° · 452 ô đất liền</div>
+  </aside>
+  <section class="mapcol" aria-label="Bản đồ">
+    <div class="maptitle" id="mtitle"></div>
+    <div id="map" tabindex="0"></div>
+    <div class="legend" id="legend"></div>
+    <div class="source" data-i18n="map.source"></div>
+  </section>
+  <aside class="det" id="det" aria-live="polite"><p class="status" data-i18n="loading">Đang tải số liệu…</p></aside>
+</main>
+</body>
+</html>

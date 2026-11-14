@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FHE Atlas · Phương pháp</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">FHE Atlas<small>Cực đoan thủy văn Việt Nam đến 2100</small></a>
+  <nav class="nav" aria-label="Trang">
+    <a href="index.html">Bản đồ</a>
+    <a href="phuong-phap.html" aria-current="page">Phương pháp</a>
+    <a href="du-lieu.html">Dữ liệu</a>
+    <a href="gioi-thieu.html">Giới thiệu</a>
+  </nav>
+  <div class="lang">VI · EN (sắp có)</div>
+</header>
+<main class="page">
+<h1>Phương pháp</h1>
+<p class="lede">Atlas dự tính hạn, lũ và chuyển đổi đột ngột hạn↔lũ ở Việt Nam đến năm 2100 trên lưới 452 ô 0,25°. Cách làm chung: học mô hình trên số liệu quan trắc của NASA, rồi cho mô hình đã học chạy với khí hậu tương lai từ 3 mô hình khí hậu toàn cầu (GCM) đã hiệu chỉnh, theo 2 kịch bản phát thải. Cuối cùng ghép với số liệu xã hội để ra bản đồ rủi ro.</p>
+
+<h2>Luồng tổng thể</h2>
+<div class="figure"><svg class="dg" viewBox="0 0 1520 688" role="img" aria-label="Luồng tổng thể FHE Atlas: số liệu NASA quan trắc dùng để học mô hình độ ẩm đất và GMDH; mô hình đã học được chạy với 3 GCM đã hiệu chỉnh cho 2 kịch bản đến 2100; ra chỉ số hạn lũ, rồi ghép với số liệu xã hội thành bản đồ rủi ro."><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk"/></marker><marker id="ahs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-soc"/></marker></defs><rect class="band band-obs" x="0" y="44" width="1520" height="192"/>
+<rect class="band band-fut" x="0" y="248" width="1520" height="228"/>
+<rect class="band band-soc" x="0" y="488" width="1520" height="144"/>
+<text class="t-lane t-obs" x="20" y="68">QUÁ KHỨ · số liệu quan trắc 2001–2025 · dùng để học và kiểm định</text>
+<text class="t-lane t-fut" x="20" y="272">TƯƠNG LAI · 3 GCM × 2 kịch bản SSP · 2015–2100 · dự tính</text>
+<text class="t-lane t-soc" x="20" y="512">XÃ HỘI · số liệu năm 2020 · ai dễ bị tổn thương</text>
+<text class="t-head" x="95.0" y="28" text-anchor="middle">Nguồn số liệu</text>
+<text class="t-head" x="315.0" y="28" text-anchor="middle">GĐ1 · Chuẩn bị</text>
+<text class="t-head" x="535.0" y="28" text-anchor="middle">GĐ2 · Độ ẩm đất</text>
+<text class="t-head" x="755.0" y="28" text-anchor="middle">GĐ3 · Nước trữ</text>
+<text class="t-head" x="975.0" y="28" text-anchor="middle">GĐ4a · Chỉ số</text>
+<text class="t-head" x="1195.0" y="28" text-anchor="middle">GĐ4b-1 · Rủi ro</text>
+<text class="t-head" x="1415.0" y="28" text-anchor="middle">GĐ4b-2 · Atlas</text>
+<g class="bx bx-obs"><rect x="20" y="84" width="150" height="130" rx="6"/>
+<text class="t-title" x="30" y="104">NASA · quan trắc</text>
+<text class="t-line" x="30" y="122">IMERG · mưa</text>
+<text class="t-line" x="30" y="138">MERRA-2 · nhiệt độ</text>
+<text class="t-line" x="30" y="154">GLDAS · SM, ET, Qs</text>
+<text class="t-line" x="30" y="170">SMAP · SM 0–5 cm</text>
+<text class="t-line" x="30" y="186">GRACE · nước trữ</text>
+<text class="t-line" x="30" y="202">Ksat · độ thấm đất</text>
+</g>
+<g class="bx bx-obs"><rect x="240" y="84" width="150" height="98" rx="6"/>
+<text class="t-title" x="250" y="104">1a · Chuẩn hóa</text>
+<text class="t-line" x="250" y="122">lưới 0,25° (72×48)</text>
+<text class="t-line" x="250" y="138">452 ô đất liền</text>
+<text class="t-line" x="250" y="154">bảo toàn khối lượng</text>
+<text class="t-line" x="250" y="170">đối chiếu chéo</text>
+</g>
+<g class="bx bx-obs"><rect x="460" y="84" width="150" height="114" rx="6"/>
+<text class="t-title" x="470" y="104">Mô hình lai · học</text>
+<text class="t-line" x="470" y="122">cân bằng nước 2 lớp</text>
+<text class="t-line" x="470" y="138">+ ConvLSTM sinh ET</text>
+<text class="t-line" x="470" y="154">học 2016–2022</text>
+<text class="t-line" x="470" y="170">thử 2024–2025</text>
+<text class="t-line" x="470" y="186">chạy ngược 2002–2014</text>
+</g>
+<g class="bx bx-obs"><rect x="680" y="84" width="150" height="114" rx="6"/>
+<text class="t-title" x="690" y="104">GMDH · học</text>
+<text class="t-line" x="690" y="122">1 mô hình mỗi ô</text>
+<text class="t-line" x="690" y="138">đích: GRACE bỏ xu thế</text>
+<text class="t-line" x="690" y="154">học 2002–2019</text>
+<text class="t-line" x="690" y="170">thử 2020–2025</text>
+<text class="t-line" x="690" y="186">lấp 33 tháng trống</text>
+</g>
+<g class="bx bx-obs"><rect x="900" y="84" width="150" height="98" rx="6"/>
+<text class="t-title" x="910" y="104">Chỉ số quan trắc</text>
+<text class="t-line" x="910" y="122">2002–2025</text>
+<text class="t-line" x="910" y="138">hạn ĐBSCL 2016: 95% ô</text>
+<text class="t-line" x="910" y="154">hạn ĐBSCL 2020: 87% ô</text>
+<text class="t-line" x="910" y="170">lũ miền Trung 2020: 87%</text>
+</g>
+<g class="bx bx-fut"><rect x="20" y="288" width="150" height="98" rx="6"/>
+<text class="t-title" x="30" y="308">CMIP6 NEX-GDDP</text>
+<text class="t-line" x="30" y="326">29 GCM</text>
+<text class="t-line" x="30" y="342">pr · tasmax · tasmin</text>
+<text class="t-line" x="30" y="358">SSP2-4.5 · SSP5-8.5</text>
+<text class="t-line" x="30" y="374">1985–2100</text>
+</g>
+<g class="bx bx-fut"><rect x="240" y="288" width="150" height="114" rx="6"/>
+<text class="t-title" x="250" y="308">1b · Hiệu chỉnh QDM</text>
+<text class="t-line" x="250" y="326">29/29 GCM</text>
+<text class="t-line" x="250" y="342">chọn 3 đại diện:</text>
+<text class="t-line" x="250" y="358">NESM3 · ẩm</text>
+<text class="t-line" x="250" y="374">CMCC-ESM2 · giữa</text>
+<text class="t-line" x="250" y="390">GISS-E2-1-G · khô</text>
+</g>
+<g class="bx bx-fut"><rect x="460" y="288" width="150" height="98" rx="6"/>
+<text class="t-title" x="470" y="308">Mô hình lai · chạy</text>
+<text class="t-line" x="470" y="326">3 GCM × 2 SSP</text>
+<text class="t-line" x="470" y="342">2015–2100</text>
+<text class="t-line" x="470" y="358">→ SM 0–5, SM 0–100</text>
+<text class="t-line" x="470" y="374">→ ET, dòng chảy</text>
+</g>
+<g class="bx bx-fut"><rect x="680" y="288" width="150" height="98" rx="6"/>
+<text class="t-title" x="690" y="308">GMDH · dự tính</text>
+<text class="t-line" x="690" y="326">TWSA 2015–2100</text>
+<text class="t-line" x="690" y="342">bản chính (đủ PT 3)</text>
+<text class="t-line" x="690" y="358">bản giữ Tmean</text>
+<text class="t-line" x="690" y="374">(độ nhạy)</text>
+</g>
+<g class="bx bx-fut"><rect x="900" y="288" width="150" height="114" rx="6"/>
+<text class="t-title" x="910" y="308">Chỉ số tương lai</text>
+<text class="t-line" x="910" y="326">SPI-3 · SSMI-3 · STWSI</text>
+<text class="t-line" x="910" y="342">copula → SDMI</text>
+<text class="t-line" x="910" y="358">→ MSWEI (RT 3, R 2)</text>
+<text class="t-line" x="910" y="374">hạn kép +9 th/10 năm</text>
+<text class="t-line" x="910" y="390">miền Bắc +17</text>
+</g>
+<g class="bx bx-fut bx-hl"><rect x="1120" y="288" width="150" height="114" rx="6"/>
+<text class="t-title" x="1130" y="308">4b-1 · Rủi ro</text>
+<text class="t-line" x="1130" y="326">H: tần suất sự kiện</text>
+<text class="t-line" x="1130" y="342">V = (SVI + LCC)/2</text>
+<text class="t-line" x="1130" y="358">R = H × V · cấp 1–5</text>
+<text class="t-line" x="1130" y="374">SSP5-8.5: R +40%</text>
+<text class="t-line" x="1130" y="390">Bắc: 79% ô cấp 4–5</text>
+</g>
+<g class="bx bx-fut bx-dash"><rect x="1340" y="288" width="150" height="66" rx="6"/>
+<text class="t-title" x="1350" y="308">4b-2 · Atlas web</text>
+<text class="t-line" x="1350" y="326">bản đồ tương tác</text>
+<text class="t-line" x="1350" y="342">chưa làm</text>
+</g>
+<g class="bx bx-fut"><rect x="20" y="404" width="150" height="50" rx="6"/>
+<text class="t-title" x="30" y="424">OBS lưới</text>
+<text class="t-line" x="30" y="442">1985–2014 · làm chuẩn</text>
+</g>
+<g class="bx bx-soc"><rect x="20" y="528" width="150" height="82" rx="6"/>
+<text class="t-title" x="30" y="548">Xã hội · 2020</text>
+<text class="t-line" x="30" y="566">WorldPop · dân, tuổi</text>
+<text class="t-line" x="30" y="582">Meta RWI · giàu nghèo</text>
+<text class="t-line" x="30" y="598">MAP · tới cơ sở y tế</text>
+</g>
+<line class="ar" x1="170" y1="134" x2="238" y2="134" marker-end="url(#ah)"/>
+<text class="t-ar" x="205.0" y="117" text-anchor="middle">số liệu</text>
+<text class="t-ar" x="205.0" y="128" text-anchor="middle">thô</text>
+<line class="ar" x1="390" y1="134" x2="458" y2="134" marker-end="url(#ah)"/>
+<text class="t-ar" x="425.0" y="117" text-anchor="middle">mưa, nhiệt,</text>
+<text class="t-ar" x="425.0" y="128" text-anchor="middle">SM, ET</text>
+<line class="ar" x1="610" y1="134" x2="678" y2="134" marker-end="url(#ah)"/>
+<text class="t-ar" x="645.0" y="117" text-anchor="middle">SM, ET</text>
+<text class="t-ar" x="645.0" y="128" text-anchor="middle">2002–2025</text>
+<line class="ar" x1="830" y1="134" x2="898" y2="134" marker-end="url(#ah)"/>
+<text class="t-ar" x="865.0" y="117" text-anchor="middle">TWSA</text>
+<text class="t-ar" x="865.0" y="128" text-anchor="middle">lấp đủ</text>
+<line class="ar" x1="170" y1="338" x2="238" y2="338" marker-end="url(#ah)"/>
+<text class="t-ar" x="205.0" y="321" text-anchor="middle">pr, tas</text>
+<text class="t-ar" x="205.0" y="332" text-anchor="middle">thô</text>
+<line class="ar" x1="390" y1="338" x2="458" y2="338" marker-end="url(#ah)"/>
+<text class="t-ar" x="425.0" y="321" text-anchor="middle">mưa, nhiệt</text>
+<text class="t-ar" x="425.0" y="332" text-anchor="middle">đã hiệu chỉnh</text>
+<line class="ar" x1="610" y1="338" x2="678" y2="338" marker-end="url(#ah)"/>
+<text class="t-ar" x="645.0" y="321" text-anchor="middle">SM, ET</text>
+<text class="t-ar" x="645.0" y="332" text-anchor="middle">+ Tmean</text>
+<line class="ar" x1="830" y1="338" x2="898" y2="338" marker-end="url(#ah)"/>
+<text class="t-ar" x="865.0" y="321" text-anchor="middle">TWSA</text>
+<text class="t-ar" x="865.0" y="332" text-anchor="middle">2 bản</text>
+<line class="ar" x1="1050" y1="338" x2="1118" y2="338" marker-end="url(#ah)"/>
+<text class="t-ar" x="1085.0" y="321" text-anchor="middle">MSWEI,</text>
+<text class="t-ar" x="1085.0" y="332" text-anchor="middle">hạn kép</text>
+<line class="ar" x1="1270" y1="338" x2="1338" y2="338" marker-end="url(#ah)"/>
+<text class="t-ar" x="1305.0" y="321" text-anchor="middle">bản đồ,</text>
+<text class="t-ar" x="1305.0" y="332" text-anchor="middle">số liệu</text>
+<line class="ar ar-dash" x1="535.0" y1="198" x2="535.0" y2="286" marker-end="url(#ah)"/><text class="t-ar t-ar-v" x="542.0" y="247.0">mô hình đã học</text>
+<line class="ar ar-dash" x1="755.0" y1="198" x2="755.0" y2="286" marker-end="url(#ah)"/><text class="t-ar t-ar-v" x="762.0" y="247.0">GMDH đã học</text>
+<path class="ar" d="M170 429.0 H315.0 V404" fill="none" marker-end="url(#ah)"/>
+<text class="t-ar" x="178" y="423.0">chuẩn để hiệu chỉnh</text>
+<path class="ar ar-soc" d="M170 569.0 H1195.0 V404" fill="none" marker-end="url(#ahs)"/>
+<text class="t-ar t-soc" x="682.5" y="562.0" text-anchor="middle">SVI (thiếu thốn, trẻ nhỏ, người già) · LCC (xa cơ sở y tế) · mật độ = phơi nhiễm</text>
+<line class="ar" x1="20" y1="666" x2="58" y2="666" marker-end="url(#ah)"/><text class="t-line" x="66" y="670">số liệu chảy sang bước sau</text>
+<line class="ar ar-dash" x1="270" y1="666" x2="308" y2="666" marker-end="url(#ah)"/><text class="t-line" x="316" y="670">dùng lại mô hình đã học trên quan trắc</text>
+<g class="bx bx-fut bx-dash"><rect x="580" y="657" width="30" height="18" rx="4"/></g><text class="t-line" x="618" y="670">chưa làm</text>
+<g class="bx bx-fut bx-hl"><rect x="710" y="657" width="30" height="18" rx="4"/></g><text class="t-line" x="748" y="670">sản phẩm cuối hiện có</text></svg></div>
+<p class="caption">Làn trên là quá khứ: số liệu quan trắc dùng để học và kiểm định. Mũi tên nét đứt: mô hình đã học ở giai đoạn 2 và 3 được dùng lại ở làn dưới, chạy với khí hậu tương lai của 3 GCM. Làn xã hội chỉ đi vào bước rủi ro.</p>
+
+<h2>Bảy giai đoạn</h2>
+<div class="stage"><h3><span class="pill">1a</span>Chuẩn hóa số liệu NASA</h3>
+<p>IMERG (mưa), MERRA-2 (nhiệt độ), GLDAS (độ ẩm đất, bốc hơi, dòng chảy), SMAP (độ ẩm lớp mặt), GRACE/GRACE-FO (nước trữ) và độ thấm đất được đưa về lưới 72×48 ô 0,25°, giữ 452 ô có tâm trong lãnh thổ Việt Nam. Đổi lưới bảo toàn tổng lượng: tổng mưa trước và sau lệch tối đa 5,1×10⁻⁷.</p></div>
+<div class="stage"><h3><span class="pill">1b</span>Hiệu chỉnh mô hình khí hậu, chọn 3 GCM</h3>
+<p>Mưa và nhiệt độ của 29 GCM trong NEX-GDDP-CMIP6 được hiệu chỉnh bằng QDM (Cannon và cs. 2015) theo bộ OBS lưới 1985–2014. Ba GCM đại diện cho mức thay đổi mưa cao, giữa và thấp: NESM3 (+23,6% ở SSP5-8.5), CMCC-ESM2 (+8,6%) và GISS-E2-1-G (−0,9%).</p></div>
+<div class="stage"><h3><span class="pill">2</span>Độ ẩm đất và bốc hơi</h3>
+<p>Mô hình lai: phương trình cân bằng nước hai lớp đất (0–5 cm và 5–100 cm) viết dạng khả vi, cộng mạng ConvLSTM sinh bốc hơi. Học trên SMAP và GLDAS 2016–2022, thử độc lập 2024–2025. Vùng rễ 0–100 cm bám tốt (tương quan 0,94); lớp mặt 0–5 cm còn yếu (0,46). Cân bằng nước luôn được giữ.</p></div>
+<div class="stage"><h3><span class="pill">3</span>Tổng lượng nước trữ (TWSA)</h3>
+<p>Một mô hình GMDH cho mỗi ô, học quan hệ giữa độ ẩm đất, bốc hơi, nhiệt độ và TWSA của GRACE (đã bỏ xu thế), 2002–2019; thử 2020–2025 (tương quan 0,88). Mô hình lấp 33 tháng GRACE trống và dự tính TWSA do khí hậu đến 2100. Vì 40–75% mức giảm ở SSP5-8.5 đi qua số hạng nhiệt độ, có thêm một bản giữ nhiệt độ cố định để làm khoảng độ nhạy.</p></div>
+<div class="stage"><h3><span class="pill">4a</span>Chỉ số hạn, lũ, chuyển đổi hạn↔lũ</h3>
+<p>SPI-3 (mưa), SSMI-3 (độ ẩm 0–100 cm) và STWSI (nước trữ). SPI và SSMI được ghép bằng copula hai biến thành SDMI. MSWEI đo chuyển đổi đột ngột: dương là hạn→lũ, âm là lũ→hạn, cấp nhẹ từ 0,5, trung bình từ 1, nặng từ 1,5, cực đoan từ 2. Hạn kép là SDMI ≤ −1 và STWSI ≤ −1 cùng tháng. Trên quan trắc, chỉ số bắt được hạn ĐBSCL 2016 (95% ô) và lũ miền Trung 2020 (87%).</p></div>
+<div class="stage"><h3><span class="pill">4b-1</span>Tổn thương xã hội và rủi ro</h3>
+<p>SVI là trung bình hạng của mức thiếu thốn (chỉ số giàu nghèo tương đối của Meta, đổi dấu), tỷ lệ trẻ dưới 5 tuổi và người từ 65 tuổi (WorldPop 2020). Thiếu năng lực chống chịu là hạng thời gian tới cơ sở y tế (Malaria Atlas Project 2020). Rủi ro R = hiểm họa × (SVI + năng lực)/2, chia 5 cấp theo ngưỡng cố định. Mật độ dân là phơi nhiễm, lưu riêng theo khung IPCC.</p></div>
+<div class="stage"><h3><span class="pill">4b-2</span>Atlas web</h3>
+<p>Trang này. Mọi lớp đã tính sẵn; trình duyệt chỉ vẽ. Không dùng bản đồ nền hay dịch vụ của bên thứ ba; nền là Natural Earth bản quan điểm Việt Nam.</p></div>
+
+<h2>Các lớp trên bản đồ</h2>
+<p>Ba giai đoạn atlas: 2026–2050, 2051–2075, 2076–2100. “Thay đổi” luôn so với 2026–2050, tính cho từng GCM rồi lấy trung vị. Ô gạch chéo: 3 GCM không cùng chiều thay đổi.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Lớp</th><th>Định nghĩa</th><th>Đơn vị</th></tr></thead>
+<tbody>
+<tr><td>Cấp rủi ro, chỉ số R</td><td>R = H × V; H = tần suất sự kiện / 44 tháng mỗi 10 năm (mức cao của 2026–2050), kẹp 0–2; V = (SVI + thiếu năng lực chống chịu)/2</td><td>cấp 1–5; không thứ nguyên</td></tr>
+<tr><td>Hiểm họa tổng hợp</td><td>tháng có |MSWEI| ≥ 1 hoặc hạn kép, mỗi tháng đếm một lần</td><td>tháng/10 năm</td></tr>
+<tr><td>Hạn kép, ướt kép</td><td>SDMI ≤ −1 và STWSI ≤ −1; SDMI ≥ 1 và STWSI ≥ 1</td><td>tháng/10 năm</td></tr>
+<tr><td>Hạn → lũ, lũ → hạn</td><td>MSWEI ≥ 0,5; MSWEI ≤ −0,5</td><td>tháng/10 năm</td></tr>
+<tr><td>Hạn, ướt bề mặt</td><td>SDMI ≤ −1; SDMI ≥ 1</td><td>tháng/10 năm</td></tr>
+<tr><td>Độ ẩm 0–5 cm, 0–100 cm; bốc hơi</td><td>trung bình giai đoạn, bản đã ánh xạ về chuẩn SMAP, GLDAS; thay đổi tính theo %</td><td>m³/m³; mm; mm/ngày</td></tr>
+<tr><td>TWSA</td><td>dị thường nước trữ do khí hậu, trung bình giai đoạn</td><td>cm</td></tr>
+<tr><td>SVI và thành phần, thiếu năng lực chống chịu</td><td>hạng phần trăm trong 452 ô, cao là bất lợi; số liệu năm 2020</td><td>hạng 0–1</td></tr>
+<tr><td>Mật độ dân (phơi nhiễm)</td><td>WorldPop 2020, không nằm trong SVI</td><td>người/km²</td></tr>
+</tbody></table></div>
+
+<h2>Hạn chế</h2>
+<ul>
+<li>Chỉ 3 GCM đại diện; kết quả là khoảng giữa mô hình ẩm và khô, không phải xác suất.</li>
+<li>Đuôi mưa lớn của bộ OBS thấp hơn IMERG và trạm, nên mưa cực trị có thể bị đánh giá thấp.</li>
+<li>Mô hình lai còn yếu ở độ ẩm lớp mặt 0–5 cm; số liệu SMAP từ 2024 bị nghi lỗi sản phẩm.</li>
+<li>40–75% mức giảm nước trữ ở SSP5-8.5 đi qua số hạng nhiệt độ (ngoại suy), nên có hai bản TWSA.</li>
+<li>95 ô có TWSA khí hậu tháng: hạn kép, ướt kép không xác định; hiểm họa ở đó chỉ tính phần MSWEI.</li>
+<li>Số liệu xã hội cố định năm 2020; chỉ số giàu nghèo là tương đối, giấy phép phi thương mại.</li>
+<li>Chưa tính xâm nhập mặn và nước biển dâng ở Đồng bằng sông Cửu Long.</li>
+<li>Bản đồ chưa có ranh giới tỉnh (sau sáp nhập 07/2025 chưa có bộ ranh giới mở đáng tin cậy).</li>
+</ul>
+</main>
+</body>
+</html>

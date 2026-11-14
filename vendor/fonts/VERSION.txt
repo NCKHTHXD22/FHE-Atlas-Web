@@ -1,0 +1,10 @@
+@fontsource/source-sans-3 5.3.1 — https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.3.1/files/ (tải 14/11/2026), SIL OFL 1.1
+0f73f35e08cde0a2f10c109c6e01d71459d97e4099ecd9a50f1b6c0209e4de2b *source-sans-3-latin-400-normal.woff2
+14527d193b0e30bc32ef931549a246cdfd286573bb12869b7e052b8101a39d38 *source-sans-3-latin-600-normal.woff2
+ae35266f2ab0d5314ff9a04127931eb26c793e4f1269bb240046d4d2db4b7bb1 *source-sans-3-latin-700-normal.woff2
+f5706bb057951632456ecbc496dfd01f0e1598718cb31c464c74a6b1fe79c837 *source-sans-3-latin-ext-400-normal.woff2
+5727d1da676bb59d22a985ccb0506219e25e847738214fec4eb00c17bed81ffc *source-sans-3-latin-ext-600-normal.woff2
+6a9fd74275186fc7c5019796401ac280d2cdd19afc6cbb1ae9af481cbda9d25c *source-sans-3-latin-ext-700-normal.woff2
+06d1ea08ca0f42e1eba33fb67670d3aa24f0a5bc14f5076094f2e4c43790929d *source-sans-3-vietnamese-400-normal.woff2
+59f90792ec62ab0d73cad8fa82908755befe8db313ec4c1bb375464bdf5ea18b *source-sans-3-vietnamese-600-normal.woff2
+16b08bc821a9a93bc3c7379c41801edb0a35806e1eac54630467a7439ca8ca6c *source-sans-3-vietnamese-700-normal.woff2

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FHE Atlas · Dữ liệu</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">FHE Atlas<small>Cực đoan thủy văn Việt Nam đến 2100</small></a>
+  <nav class="nav" aria-label="Trang">
+    <a href="index.html">Bản đồ</a>
+    <a href="phuong-phap.html">Phương pháp</a>
+    <a href="du-lieu.html" aria-current="page">Dữ liệu</a>
+    <a href="gioi-thieu.html">Giới thiệu</a>
+  </nav>
+  <div class="lang">VI · EN (sắp có)</div>
+</header>
+<main class="page">
+<h1>Dữ liệu</h1>
+<p class="lede">Toàn bộ số liệu của atlas được công bố mở để kiểm chứng và tái sử dụng. Trên trang Bản đồ, nút “Tải lớp đang xem” cho tệp CSV hoặc GeoJSON của đúng lớp, kịch bản, giai đoạn và GCM đang xem.</p>
+
+<h2>Năm bộ dữ liệu mở của đề tài</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Sản phẩm</th><th>Nội dung</th><th>Thời kỳ</th></tr></thead>
+<tbody>
+<tr><td>Độ ẩm đất lớp mặt 0–5 cm</td><td>mô phỏng theo chuẩn SMAP, ngày và tháng, 452 ô, 3 GCM × 2 SSP</td><td>2015–2100</td></tr>
+<tr><td>Độ ẩm đất vùng rễ 0–100 cm</td><td>theo chuẩn GLDAS</td><td>2015–2100</td></tr>
+<tr><td>Bốc thoát hơi (ET)</td><td>từ mô hình lai, khí tượng NEX-GDDP đã hiệu chỉnh</td><td>2015–2100</td></tr>
+<tr><td>Dị thường nước trữ (TWSA)</td><td>GMDH theo GRACE/GRACE-FO; hai bản (chính, giữ nhiệt độ)</td><td>2002–2025 lấp đủ; 2015–2100 dự tính</td></tr>
+<tr><td>Chỉ số MSWEI và các sự kiện</td><td>SPI-3, SSMI-3, STWSI, SDMI, MSWEI theo tháng</td><td>2002–2025; 2015–2100</td></tr>
+</tbody></table></div>
+<p>Bộ dữ liệu đầy đủ (NetCDF) sẽ có trên Zenodo, kèm mã DOI để trích dẫn.</p>
+
+<h2>Giấy phép nguồn</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Nguồn</th><th>Dùng cho</th><th>Giấy phép</th></tr></thead>
+<tbody>
+<tr><td>NASA IMERG, MERRA-2, GLDAS, SMAP, GRACE/GRACE-FO</td><td>quan trắc, huấn luyện, kiểm định</td><td>dùng tự do (chính sách dữ liệu mở của NASA)</td></tr>
+<tr><td>NEX-GDDP-CMIP6</td><td>khí hậu tương lai</td><td>dùng tự do, trích dẫn theo NASA</td></tr>
+<tr><td>WorldPop 2020</td><td>dân số, cơ cấu tuổi</td><td>CC BY 4.0</td></tr>
+<tr><td>Meta Relative Wealth Index</td><td>mức thiếu thốn</td><td>CC BY-NC 4.0 (phi thương mại)</td></tr>
+<tr><td>Malaria Atlas Project 2020</td><td>thời gian tới cơ sở y tế</td><td>CC BY 4.0</td></tr>
+<tr><td>Natural Earth</td><td>bản đồ nền, địa danh</td><td>phạm vi công cộng</td></tr>
+</tbody></table></div>
+<p>Vì dùng Meta Relative Wealth Index, các lớp SVI, mức thiếu thốn, thiếu năng lực chống chịu và rủi ro chỉ được dùng cho mục đích phi thương mại.</p>
+
+<h2>Cấu trúc số liệu của trang</h2>
+<p>Thư mục <code>data/</code> của trang web chứa số liệu đã tính sẵn, đọc được bằng bất kỳ ngôn ngữ nào:</p>
+<ul>
+<li><code>cells.geojson</code>: 452 ô vuông 0,25°, mỗi ô có <code>id</code>, <code>lat</code>, <code>lon</code>.</li>
+<li><code>layers/&lt;lớp&gt;.json</code>: giá trị 452 ô theo kịch bản → bản TWSA → <code>value</code>/<code>change</code> → GCM → giai đoạn; <code>agree</code> = 1 khi 3 GCM cùng chiều; <code>scale</code> ghi thang màu và ngưỡng; ô không xác định là <code>null</code>.</li>
+<li><code>cell/&lt;id&gt;.json</code>: số tháng có sự kiện mỗi năm (quan trắc 2002–2025, 3 GCM × 2 SSP 2015–2100) và chỉ tiêu xã hội của ô.</li>
+<li><code>manifest.json</code>: phiên bản mã, ngày xuất, mã sha256 của từng tệp.</li>
+</ul>
+
+<h2>Trích dẫn</h2>
+<p>Khi dùng số liệu hoặc hình từ atlas, xin trích dẫn đề tài (xem trang <a href="gioi-thieu.html">Giới thiệu</a>) và các nguồn gốc ở bảng trên.</p>
+</main>
+</body>
+</html>

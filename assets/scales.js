@@ -47,11 +47,11 @@ export function parseHash(hash, index, nCells = N_CELLS) {
   const parts = String(hash || "").replace(/^#/, "").split("-");
   if (parts.length !== 7) return s;
   const [layer, ssp, period, gcm, variant, mode, cell] = parts;
-  if (index.layers.some((l) => l.key === layer)) s.layer = layer;
+  if (index.layers.some((l) => l.key === layer)) s.layer = layer; // so khớp chính xác, không qua khóa kế thừa
   if (index.ssps.includes(ssp)) s.ssp = ssp;
   const p = Number(period);
   if (Number.isInteger(p) && p >= 0 && p < index.periods.length) s.period = p;
-  if (GCM_CODES[gcm]) s.gcm = GCM_CODES[gcm];
+  if (Object.hasOwn(GCM_CODES, gcm)) s.gcm = GCM_CODES[gcm];
   if ((index.variants || ["main", "tfixed"]).includes(variant)) s.variant = variant;
   if (mode === "value" || mode === "change") s.mode = mode;
   const c = Number(cell);
@@ -86,4 +86,9 @@ export function riskSentence(t, { ssp, period, c0, c, agree }) {
   if (agree === 1) s += " " + t["sentence.agree"];
   else if (agree === 0) s += " " + t["sentence.disagree"];
   return s;
+}
+
+/** Ô TWSA khí hậu tháng: hạn kép không xác định (null) ở giai đoạn đầu. 0 là giá trị thật, không phải ô khí hậu. */
+export function isClimatologyCell(compoundPeriod0, i) {
+  return Array.isArray(compoundPeriod0) && compoundPeriod0[i] === null;
 }

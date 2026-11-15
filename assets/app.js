@@ -1,6 +1,6 @@
 // FHE Atlas — trang bản đồ: trạng thái, điều khiển, chú giải, khung chi tiết ô, biểu đồ, tải về.
 import {
-  DEFAULT_STATE, binIndex, colorFor, fmtVi, buildHash, parseHash, normalizeState, csvForLayer, riskSentence, fill,
+  DEFAULT_STATE, binIndex, colorFor, fmtVi, buildHash, parseHash, normalizeState, csvForLayer, riskSentence, fill, isClimatologyCell,
 } from "./scales.js";
 import { initMap } from "./map.js";
 
@@ -254,7 +254,7 @@ async function renderDetail() {
   const pal = S.palettes.YlOrRd5, txt = ["#000", "#000", "#000", "#fff", "#fff"];
   const chip = cls ? `<span class="chip" style="background:${pal[cls - 1]};color:${txt[cls - 1]}">${esc(`Cấp ${cls} · ${t(`class.${cls}`)}`)}</span>` : "";
   const sentence = cls && cls0 ? riskSentence(VI, { ssp: t(`ssp.${st.ssp}`), period: t(`period.${st.period}`), c0: cls0, c: cls, agree }) : "";
-  const isClim = (S.layers.drought_compound?.data?.[st.ssp]?.main?.value?.median?.[0]?.[i] ?? 0) === null;
+  const isClim = isClimatologyCell(S.layers.drought_compound?.data?.[st.ssp]?.main?.value?.median?.[0], i);
   const soc = cd.social;
   const socRows = [
     ["social.svi", fmtVi(soc.svi, 2)], ["social.lcc", fmtVi(soc.lcc, 2)],
@@ -384,7 +384,7 @@ async function main() {
       download(`${fileStem()}.geojson`, JSON.stringify(fc), "application/geo+json");
     });
     window.addEventListener("hashchange", () => setState(parseHash(location.hash, S.index), { fromHash: true }));
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { S.handle.setTheme(theme()); renderMap(); });
+    window.addEventListener("atlas:themechange", () => { S.handle.setTheme(theme()); if (S.layers[S.st.layer]) renderMap(); });
     await Promise.all([layer("risk_class"), layer("risk_r"), layer("drought_compound")]);
     await setState(parseHash(location.hash, S.index), { fromHash: !location.hash });
   } catch (err) {

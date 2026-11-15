@@ -6,6 +6,7 @@
 <title>FHE Atlas · Bản đồ</title>
 <meta name="description" content="Atlas cực đoan thủy văn tương lai của Việt Nam: hạn, lũ, chuyển đổi hạn↔lũ và rủi ro tổng hợp đến 2100 theo kịch bản CMIP6.">
 <link rel="stylesheet" href="vendor/maplibre-gl/maplibre-gl.css">
+<script src="assets/theme.js"></script>
 <link rel="stylesheet" href="assets/style.css">
 <script src="vendor/maplibre-gl/maplibre-gl.js"></script>
 <script type="module" src="assets/app.js"></script>
@@ -19,7 +20,14 @@
     <a href="du-lieu.html" data-i18n="nav.data">Dữ liệu</a>
     <a href="gioi-thieu.html" data-i18n="nav.about">Giới thiệu</a>
   </nav>
-  <div class="lang" data-i18n="nav.lang">VI · EN (sắp có)</div>
+  <div class="topbar-actions">
+    <div class="lang" data-i18n="nav.lang">VI · EN (sắp có)</div>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Chuyển sang nền tối"
+      data-label-light="Chuyển sang nền sáng" data-label-dark="Chuyển sang nền tối">
+      <span class="theme-to-light" data-i18n="theme.light">☀ Sáng</span>
+      <span class="theme-to-dark" data-i18n="theme.dark">☾ Tối</span>
+    </button>
+  </div>
 </header>
 <main class="app">
   <aside class="ctl" id="ctl" aria-label="Điều khiển bản đồ">

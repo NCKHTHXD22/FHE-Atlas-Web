@@ -6,6 +6,8 @@
   "nav.data": "Dữ liệu",
   "nav.about": "Giới thiệu",
   "nav.lang": "VI · EN (sắp có)",
+  "theme.light": "☀ Sáng",
+  "theme.dark": "☾ Tối",
 
   "ctl.layers": "Lớp bản đồ",
   "ctl.mode": "Hiển thị",

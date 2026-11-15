@@ -7,11 +7,13 @@
 <meta name="description" content="Atlas cực đoan thủy văn tương lai của Việt Nam: hạn, lũ, chuyển đổi hạn↔lũ và rủi ro tổng hợp đến 2100 theo kịch bản CMIP6.">
 <link rel="stylesheet" href="vendor/maplibre-gl/maplibre-gl.css">
 <script src="assets/theme.js"></script>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
 <script src="vendor/maplibre-gl/maplibre-gl.js"></script>
 <script type="module" src="assets/app.js"></script>
 </head>
 <body class="mappage">
+<a class="skip" href="#map" data-i18n="skip.map">Bỏ qua tới bản đồ</a>
 <header class="topbar">
   <a class="brand" href="index.html"><span data-i18n="app.title">FHE Atlas</span><small data-i18n="app.subtitle">Cực đoan thủy văn Việt Nam đến 2100</small></a>
   <nav class="nav" aria-label="Trang">
@@ -31,12 +33,12 @@
 </header>
 <main class="app">
   <aside class="ctl" id="ctl" aria-label="Điều khiển bản đồ">
-    <div class="grp"><h2 data-i18n="ctl.layers">Lớp bản đồ</h2><div class="layers" id="layers"></div></div>
     <div class="grp"><h2 data-i18n="ctl.mode">Hiển thị</h2><div class="seg" id="seg-mode"></div></div>
     <div class="grp"><h2 data-i18n="ctl.ssp">Kịch bản phát thải</h2><div class="seg" id="seg-ssp"></div></div>
     <div class="grp"><h2 data-i18n="ctl.period">Giai đoạn</h2><div class="seg" id="seg-period"></div></div>
     <div class="grp"><h2 data-i18n="ctl.gcm">Mô hình khí hậu</h2><div class="seg" id="seg-gcm"></div></div>
     <div class="grp"><h2 data-i18n="ctl.variant">Bản TWSA</h2><div class="seg" id="seg-variant"></div><p class="hint" id="hint"></p></div>
+    <div class="grp"><h2 data-i18n="ctl.layers">Lớp bản đồ</h2><div class="layers" id="layers"></div></div>
     <div class="grp">
       <form class="search" id="search" role="search">
         <input id="q" list="places" autocomplete="off" aria-label="Tìm địa danh hoặc tọa độ">
@@ -55,7 +57,7 @@
     <div class="maptitle" id="mtitle"></div>
     <div id="map" tabindex="0"></div>
     <div class="legend" id="legend"></div>
-    <div class="source" data-i18n="map.source"></div>
+    <div class="source"><span data-i18n="map.source"></span> <span id="version"></span></div>
   </section>
   <aside class="det" id="det" aria-live="polite"><p class="status" data-i18n="loading">Đang tải số liệu…</p></aside>
 </main>

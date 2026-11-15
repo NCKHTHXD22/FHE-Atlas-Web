@@ -19,10 +19,39 @@ export function binIndex(v, breaks) {
   return i;
 }
 
+/** Bảng màu theo nền: ở nền tối, màu giữa (trung tính) của thang phân kỳ đổi sang xám vừa để không sáng chói. */
+export function paletteFor(name, palettes, theme = "light") {
+  const pal = [...palettes[name]];
+  const over = theme === "dark" && palettes._dark ? palettes._dark[name] : null;
+  if (over) for (const [i, c] of Object.entries(over)) pal[Number(i)] = c;
+  return pal;
+}
+
 export function colorFor(v, scale, palettes, theme = "light") {
   const i = binIndex(v, scale.breaks);
   if (i === null) return palettes.NA[theme] || palettes.NA.light;
-  return palettes[scale.palette][i];
+  return paletteFor(scale.palette, palettes, theme)[i];
+}
+
+/** Gạch chéo chỉ ở ô 3 GCM khác chiều (agree = 0) VÀ thay đổi nằm ngoài lớp gần 0 (giữa thang phân kỳ). */
+export function hatchMask(agree, values, breaks) {
+  if (!agree) return null;
+  const mid = Math.floor(breaks.length / 2);
+  return agree.map((a, i) => {
+    const k = binIndex(values[i], breaks);
+    return a === 0 && k !== null && k !== mid ? 1 : 0;
+  });
+}
+
+/** Số chữ số thập phân vừa đủ để ghi các ngưỡng của chú giải. */
+export function legendDigits(breaks) {
+  let d = 0;
+  for (const b of breaks) {
+    const s = String(Math.round(Math.abs(b) * 1e6) / 1e6);
+    const k = s.includes(".") ? s.split(".")[1].length : 0;
+    d = Math.max(d, k);
+  }
+  return d;
 }
 
 /** Số kiểu Việt Nam: dấu phẩy thập phân, dấu trừ "−", không bao giờ "−0,00"; null → "—". */

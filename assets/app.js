@@ -1,6 +1,6 @@
 // FHE Atlas — trang bản đồ: trạng thái, điều khiển, chú giải, khung chi tiết ô, biểu đồ, tải về.
 import {
-  DEFAULT_STATE, binIndex, colorFor, fmtVi, buildHash, parseHash, normalizeState, csvForLayer, riskSentence, fill, isClimatologyCell,
+  DEFAULT_STATE, binIndex, colorFor, fmtVi, buildHash, parseHash, normalizeState, csvForLayer, riskSentence, fill, isClimatologyCell, hatchMask, paletteFor, legendDigits,
 } from "./scales.js";
 import { initMap } from "./map.js";
 
@@ -16,7 +16,7 @@ const t = (k) => (k in VI ? VI[k] : k);
 const tl = (k, vars) => fill(t(k), vars);
 
 const S = { index: null, palettes: null, cells: null, places: [], layers: {}, meta: {}, st: { ...DEFAULT_STATE },
-  handle: null, byPos: new Map(), series: "drought_compound", cellCache: new Map() };
+  handle: null, byPos: new Map(), series: "drought_compound", cellCache: new Map(), showHatch: true, manifest: null };
 
 function theme() {
   const r = document.documentElement.dataset.theme;
@@ -74,9 +74,13 @@ function buildLayerList() {
   const box = $("layers");
   box.replaceChildren();
   for (const g of GROUPS) {
-    const h = document.createElement("h3");
+    const det = document.createElement("details");
+    det.className = "lgroup";
+    det.dataset.group = g;
+    const h = document.createElement("summary");
     h.textContent = t(`group.${g}`);
-    box.append(h);
+    det.append(h);
+    box.append(det);
     for (const L of S.index.layers.filter((l) => l.group === g)) {
       const lab = document.createElement("label");
       const inp = document.createElement("input");
@@ -88,7 +92,7 @@ function buildLayerList() {
       u.className = "u"; u.textContent = t(`layer.${L.key}.desc`);
       span.append(u);
       lab.append(inp, span);
-      box.append(lab);
+      det.append(lab);
     }
   }
 }
@@ -96,6 +100,8 @@ function buildLayerList() {
 function renderControls() {
   const st = S.st, M = S.meta[st.layer];
   $(`ly-${st.layer}`).checked = true;
+  const grp = document.querySelector(`details.lgroup[data-group="${M.group}"]`);
+  if (grp && !grp.open) grp.open = true;
   const social = !M.periodic;
   segment($("seg-mode"), [["value", t("mode.value")], ["change", t("mode.change"), t("mode.change.long")]], st.mode,
     (v) => setState({ mode: v }), (v) => v === "change" && !M.has_change);
@@ -111,9 +117,9 @@ function renderControls() {
 // ---------------------------------------------------------------- bản đồ, tiêu đề, chú giải
 
 function legendRows(L, v) {
-  const sc = v.scale, pal = S.palettes[sc.palette], br = sc.breaks, d = digits(L, v.kind);
+  const sc = v.scale, pal = paletteFor(sc.palette, S.palettes, theme()), br = sc.breaks, d = legendDigits(br);
   const unit = v.kind === "change" ? L.change_unit : L.unit;
-  const sign = v.kind === "change";
+  const sign = v.kind === "change" || br.some((b) => b < 0);
   const f = (x) => fmtVi(x, d, { sign });
   const rows = [];
   if (L.key === "risk_class") {
@@ -135,7 +141,9 @@ function renderMap() {
   const st = S.st, L = S.layers[st.layer], v = view(L, st);
   const th = theme();
   S.handle.setColors(v.values.map((x) => colorFor(x, v.scale, S.palettes, th)));
-  S.handle.setHatch(v.agree);
+  const hatch = hatchMask(v.agree, v.values, v.scale.breaks);
+  S.handle.setHatch(S.showHatch ? hatch : null);
+  S.handle.setUndefined(v.values);
   S.handle.select(st.cell, st.cell === null ? null : cellInfo(st.cell));
   // tiêu đề
   const name = t(`layer.${st.layer}`) + (v.kind === "change" ? ` (${t("mode.change.long")})` : "");
@@ -145,11 +153,20 @@ function renderMap() {
   $("mtitle").innerHTML = `<b>${esc(name)}</b> <span>· ${esc(ctx)}</span>`;
   // chú giải
   const { rows, unit } = legendRows(L, v);
-  const head = `${esc(t(`layer.${st.layer}`))}${unit ? ` (${esc(unit)})` : ""}`;
+  const showUnit = unit && st.layer !== "risk_class";
+  const head = `${esc(t(`layer.${st.layer}`))}${v.kind === "change" ? " · " + esc(t("mode.change")) : ""}${showUnit ? ` <span class="u">${esc(unit)}</span>` : ""}`;
   const html = rows.map(([c, txt]) => `<div class="row"><span class="sw" style="background:${c}"></span>${esc(txt)}</div>`);
-  html.push(`<div class="row"><span class="sw" style="background:${S.palettes.NA[th]}"></span>${esc(t("legend.na"))}</div>`);
-  if (v.agree) html.push(`<div class="row"><span class="sw hatch"></span>${esc(t("legend.disagree"))}</div>`);
+  const nNa = v.values.filter((x) => x === null).length;
+  if (nNa) {
+    const why = ["drought_compound", "wet_compound"].includes(st.layer) ? t("legend.na.clim") : "";
+    html.push(`<div class="row"><span class="sw dots" style="background-color:${S.palettes.NA[th]}"></span><span class="txt">${esc(tl("legend.na.count", { n: nNa }))}${why ? `<small>${esc(why)}</small>` : ""}</span></div>`);
+  }
+  if (hatch) {
+    html.push(`<div class="row"><span class="sw hatch"></span>${esc(t("legend.disagree"))}</div>`);
+    html.push(`<label class="row tog"><input type="checkbox" id="hatch-toggle"${S.showHatch ? " checked" : ""}> ${esc(t("legend.hatch.toggle"))}</label>`);
+  }
   $("legend").innerHTML = `<h3>${head}</h3>${html.join("")}`;
+  $("hatch-toggle")?.addEventListener("change", (e) => { S.showHatch = e.target.checked; renderMap(); });
 }
 
 // ---------------------------------------------------------------- khung chi tiết
@@ -182,6 +199,7 @@ function chartR(rl, st, i) {
     if (r[0] !== null) g += `<line class="wh" x1="${cx}" y1="${y(r[0])}" x2="${cx}" y2="${y(r[2])}"/><line class="wh" x1="${cx - 6}" y1="${y(r[0])}" x2="${cx + 6}" y2="${y(r[0])}"/><line class="wh" x1="${cx - 6}" y1="${y(r[2])}" x2="${cx + 6}" y2="${y(r[2])}"/>`;
     g += `<text x="${cx}" y="${y0 + ph + 14}" text-anchor="middle">${esc(t(`period.short.${p}`))}</text>`;
   });
+  g += `<text x="2" y="${y0 - 1}" class="axl">R</text>`;
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("detail.chart.r"))}">${g}</svg>`;
 }
 
@@ -194,7 +212,7 @@ function smooth(a, k = 5) {
 }
 
 function chartEvents(cd, st, ev) {
-  const W = 290, H = 150, x0 = 26, x1 = W - 6, y0 = 8, ph = 112, X0 = 2002, X1 = 2100;
+  const W = 290, H = 162, x0 = 26, x1 = W - 16, y0 = 20, ph = 112, X0 = 2002, X1 = 2100;
   const series = RUNS.map((g) => smooth(cd.gcm[st.ssp][g][ev]));
   const obs = smooth(cd.obs[ev]);
   const all = [...series.flat(), ...obs].filter((x) => x !== null);
@@ -218,7 +236,11 @@ function chartEvents(cd, st, ev) {
     g += `<path class="run rm on" d="${path(cd.gcm.years, med)}"/>`;
   }
   g += `<path class="obs" d="${path(cd.obs.years, obs)}"/>`;
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("detail.chart.events"))}">${g}</svg>`;
+  g += `<text x="2" y="9" class="axl">${esc(t("detail.chart.events.unit"))}</text>`;
+  const leg = [`<li><i class="k obs"></i>${esc(t("detail.chart.obs"))}</li>`,
+    ...RUNS.map((r, k) => `<li><i class="k r${k}"></i>${esc(t(`gcm.long.${r}`))}</li>`)].join("");
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("detail.chart.events"))}">${g}</svg>`
+    + `<ul class="chart-legend">${leg}</ul>`;
 }
 
 async function cellData(i) {
@@ -239,7 +261,15 @@ function cellCsv(L, i) {
 
 async function renderDetail() {
   const st = S.st, det = $("det");
-  if (st.cell === null) { det.innerHTML = `<p class="status">${esc(t("detail.empty"))}</p>`; return; }
+  if (st.cell === null) {
+    det.innerHTML = `<div class="guide"><h2>${esc(t("guide.title"))}</h2>
+      <ol><li>${esc(t("guide.step1"))}</li><li>${esc(t("guide.step2"))}</li><li>${esc(t("guide.step3"))}</li></ol>
+      <h3>${esc(t(`layer.${st.layer}`))}</h3><p class="plain">${esc(t(`layer.${st.layer}.desc`))}${S.meta[st.layer].unit ? ` · ${esc(S.meta[st.layer].unit)}` : ""}</p>
+      <p class="note">${esc(t("guide.hatch"))}</p>
+      <p class="note">${esc(t("guide.keys"))}</p>
+      <p><a href="phuong-phap.html">${esc(t("guide.more"))}</a></p></div>`;
+    return;
+  }
   const i = st.cell, c = cellInfo(i), L = S.layers[st.layer], v = view(L, st);
   const [rc, rr, cd] = await Promise.all([layer("risk_class"), layer("risk_r"), cellData(i)]);
   if (S.st.cell !== i) return;
@@ -276,7 +306,7 @@ async function renderDetail() {
     ${isClim ? `<p class="note">${esc(t("detail.climatology"))}</p>` : ""}
     <div><h3>${esc(t("detail.social"))}</h3><table>${socRows.map(([k, x]) => `<tr><td class="k">${esc(t(k))}</td><td>${esc(x)}</td></tr>`).join("")}</table></div>
     <button class="btn" type="button" id="dl-cell">${esc(t("dl.cell"))}</button>`;
-  segment($("seg-series"), SERIES.map((k) => [k, t(`layer.${k}`)]), S.series, (k) => { S.series = k; renderDetail(); });
+  segment($("seg-series"), SERIES.map((k) => [k, t(`series.${k}`), t(`layer.${k}`)]), S.series, (k) => { S.series = k; renderDetail(); });
   $("dl-cell").addEventListener("click", () => download(`fhe-atlas-o-${i}-${L.key}.csv`, cellCsv(L, i), "text/csv"));
 }
 
@@ -375,6 +405,10 @@ async function main() {
     buildLayerList();
     S.handle = initMap($("map"), { basemap, cells, places, palettes, theme: theme(), t });
     S.handle.onCellClick((id) => setState({ cell: id }));
+    window.FHE_ATLAS = { map: S.handle.map };
+    getJSON("data/manifest.json").then((m) => {
+      $("version").textContent = tl("map.version", { date: String(m.created).slice(0, 10), code: m.code_version });
+    }).catch(() => {});
     $("search").addEventListener("submit", onSearch);
     $("map").addEventListener("keydown", onKey);
     $("dl-csv").addEventListener("click", () => download(`${fileStem()}.csv`, csvForLayer(layerRows()), "text/csv"));

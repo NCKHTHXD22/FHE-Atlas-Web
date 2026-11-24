@@ -14,7 +14,7 @@
   "ctl.period": "Giai đoạn",
   "ctl.gcm": "Mô hình khí hậu",
   "ctl.variant": "Bản TWSA",
-  "ctl.search": "Tìm địa danh hoặc nhập “vĩ độ, kinh độ”",
+  "ctl.search": "Tìm tỉnh, địa danh hoặc nhập “vĩ độ, kinh độ”",
   "ctl.search.go": "Tìm",
   "ctl.search.none": "Không tìm thấy. Thử tên khác hoặc nhập dạng 21,03, 105,85.",
   "ctl.meta": "Lưới 0,25° · 452 ô đất liền · 3 GCM: NESM3, CMCC-ESM2, GISS-E2-1-G",
@@ -121,7 +121,7 @@
   "dl.cell": "Tải số liệu ô này (CSV)",
   "dl.layer.csv": "Tải lớp đang xem (CSV)",
   "dl.layer.geojson": "Tải lớp đang xem (GeoJSON)",
-  "map.source": "Nguồn: FHE Atlas (2026) từ NASA IMERG, MERRA-2, GLDAS, SMAP, GRACE/GRACE-FO; NEX-GDDP-CMIP6; WorldPop; Meta RWI; Malaria Atlas Project. Nền: Natural Earth.",
+  "map.source": "Nguồn: FHE Atlas (2026) từ NASA IMERG, MERRA-2, GLDAS, SMAP, GRACE/GRACE-FO; NEX-GDDP-CMIP6; WorldPop; Meta RWI; Malaria Atlas Project. Ranh giới Việt Nam (gồm Hoàng Sa, Trường Sa) và 34 tỉnh (2025): nhóm nghiên cứu cung cấp; nước láng giềng: Natural Earth.",
   "map.label.paracel": "Quần đảo Hoàng Sa",
   "map.label.spratly": "Quần đảo Trường Sa",
   "map.label.sea": "Biển Đông",
@@ -144,5 +144,6 @@
   "guide.keys": "Bàn phím: bấm vào bản đồ rồi dùng phím mũi tên để chuyển sang ô bên cạnh.",
   "guide.more": "Phương pháp và định nghĩa các lớp →",
   "map.version": "Số liệu xuất ngày {date} · mã {code} · Giấy phép CC BY-NC 4.0 · Phép chiếu Web Mercator (WGS 84)",
-  "skip.map": "Bỏ qua tới bản đồ"
+  "skip.map": "Bỏ qua tới bản đồ",
+  "detail.province": "Thuộc {name}"
 }

@@ -41,7 +41,7 @@ function label(map, lngLat, text, cls) {
 
 const idFilter = (ids) => ["in", ["get", "id"], ["literal", ids]];
 
-export function initMap(container, { basemap, cells, places, palettes, theme, t }) {
+export function initMap(container, { basemap, cells, places, provinces, palettes, theme, t }) {
   const M = ml();
   const map = new M.Map({
     container, bounds: BOUNDS, fitBoundsOptions: { padding: 12 }, attributionControl: false,
@@ -52,6 +52,7 @@ export function initMap(container, { basemap, cells, places, palettes, theme, t 
         basemap: { type: "geojson", data: basemap },
         cells: { type: "geojson", data: cells, promoteId: "id" },
         grat: { type: "geojson", data: graticule() },
+        provinces: { type: "geojson", data: provinces },
       },
       layers: [
         { id: "bg", type: "background", paint: { "background-color": css("--sea") } },
@@ -61,12 +62,14 @@ export function initMap(container, { basemap, cells, places, palettes, theme, t 
         { id: "cells", type: "fill", source: "cells",
           paint: { "fill-color": ["coalesce", ["feature-state", "color"], palettes.NA[theme]], "fill-antialias": false } },
         { id: "cell-lines", type: "line", source: "cells", paint: { "line-color": css("--fg"), "line-opacity": 0.14, "line-width": 0.4 } },
+        { id: "provinces", type: "line", source: "provinces", filter: ["==", ["get", "kind"], "province"],
+          paint: { "line-color": css("--fg"), "line-opacity": 0.5, "line-width": 0.7 } },
         { id: "borders", type: "line", source: "basemap", filter: ["in", ["get", "kind"], ["literal", ["vn", "neighbor"]]],
           paint: { "line-color": css("--border"), "line-width": 0.8 } },
         { id: "island-frames", type: "line", source: "basemap", filter: ["==", ["get", "kind"], "island_frame"],
           paint: { "line-color": css("--fg"), "line-width": 0.9, "line-dasharray": [3, 2], "line-opacity": 0.75 } },
         { id: "islands", type: "circle", source: "basemap", filter: ["==", ["get", "kind"], "island"],
-          paint: { "circle-radius": 2.6, "circle-color": css("--fg"), "circle-stroke-color": css("--panel"), "circle-stroke-width": 1 } },
+          paint: { "circle-radius": 2.2, "circle-color": css("--fg"), "circle-stroke-color": css("--panel"), "circle-stroke-width": 1 } },
         { id: "sel-halo", type: "line", source: "cells", filter: ["==", ["get", "id"], -1],
           paint: { "line-color": "#ffffff", "line-width": 4.5 } },
         { id: "sel", type: "line", source: "cells", filter: ["==", ["get", "id"], -1],
@@ -94,16 +97,30 @@ export function initMap(container, { basemap, cells, places, palettes, theme, t 
     if (colors) paint(colors);
     for (let lon = 102; lon <= 114; lon += 2) label(map, [lon, 7.25], `${lon}°E`, "lbl-grat");
     for (let lat = 8; lat <= 22; lat += 2) label(map, [101.75, lat], `${lat}°N`, "lbl-grat");
-    places.slice(0, container.clientWidth < 600 ? 6 : N_LABELS).forEach((p) => label(map, [p.lon, p.lat], p.name, "lbl-place"));
+    const shown = places.slice(0, container.clientWidth < 600 ? 6 : N_LABELS);
+    shown.forEach((p) => label(map, [p.lon, p.lat], p.name, "lbl-place"));
+    const shownNames = new Set(shown.map((p) => p.name));
     label(map, [112.1, 17.75], t("map.label.paracel"), "lbl-isl");
     label(map, [114.0, 12.3], t("map.label.spratly"), "lbl-isl");
     label(map, [110.6, 14.4], t("map.label.sea"), "lbl-sea");
+    // tên tỉnh: chỉ hiện khi phóng to hơn mức cả nước để bản đồ khỏi rối
+    provLabels = provinces.features.filter((f) => f.properties.kind === "province_label" && !shownNames.has(f.properties.name.replace(/^TP\. /, "Thành phố ")) && !shownNames.has(f.properties.name))
+      .map((f) => label(map, f.geometry.coordinates, f.properties.name, "lbl-prov off"));
+    baseZoom = map.getZoom();
+    toggleProvLabels();
   });
+  let provLabels = [], baseZoom = null;
+  function toggleProvLabels() {
+    if (baseZoom === null) return;
+    const on = map.getZoom() >= baseZoom + 1;
+    provLabels.forEach((m) => m.getElement().classList.toggle("off", !on));
+  }
+  map.on("zoom", toggleProvLabels);
 
   map.on("movestart", (e) => { if (e.originalEvent) userMoved = true; });
   new ResizeObserver(() => {
     map.resize();
-    if (!userMoved) map.fitBounds(BOUNDS, { padding: 12, animate: false });
+    if (!userMoved) { map.fitBounds(BOUNDS, { padding: 12, animate: false }); if (baseZoom !== null) { baseZoom = map.getZoom(); toggleProvLabels(); } }
   }).observe(container);
 
   map.on("click", "cells", (e) => { const f = e.features && e.features[0]; if (f) clickCb(f.properties.id); });
@@ -146,6 +163,7 @@ export function initMap(container, { basemap, cells, places, palettes, theme, t 
         map.setPaintProperty("borders", "line-color", css("--border"));
         map.setPaintProperty("grat", "line-color", css("--border"));
         map.setPaintProperty("cell-lines", "line-color", css("--fg"));
+        map.setPaintProperty("provinces", "line-color", css("--fg"));
         map.setPaintProperty("island-frames", "line-color", css("--fg"));
         map.setPaintProperty("islands", "circle-color", css("--fg"));
         map.setPaintProperty("islands", "circle-stroke-color", css("--panel"));
@@ -155,5 +173,6 @@ export function initMap(container, { basemap, cells, places, palettes, theme, t 
       });
     },
     onCellClick(cb) { clickCb = cb; },
+    fitTo(bbox) { userMoved = true; ready.then(() => map.fitBounds([[bbox[0], bbox[1]], [bbox[2], bbox[3]]], { padding: 40, animate: false })); },
   };
 }

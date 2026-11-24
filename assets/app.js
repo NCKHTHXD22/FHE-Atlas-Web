@@ -294,7 +294,8 @@ async function renderDetail() {
   ];
   det.innerHTML = `
     <div><div class="loc">${esc(tl("detail.cell", { lat: fmtVi(c.lat, 3), lon: fmtVi(c.lon, 3) }))}</div>
-      ${near ? `<div class="near">${esc(tl("detail.near", { name: near.name }))}</div>` : ""}</div>
+      <div class="prov">${esc(tl("detail.province", { name: S.cellProv[i] }))}</div>
+      ${near && near.name !== S.cellProv[i] ? `<div class="near">${esc(tl("detail.near", { name: near.name }))}</div>` : ""}</div>
     <div>${chip}</div>
     ${sentence ? `<p class="plain">${esc(sentence)}</p>` : ""}
     <div><h3>${esc(t("detail.layer"))}</h3><p class="plain">${esc(t(`layer.${st.layer}`))}: <b>${esc(fmtVi(val, d, { sign: v.kind === "change" }))}${unit ? " " + esc(unit) : ""}</b>${esc(rng)}</p></div>
@@ -356,8 +357,11 @@ function onSearch(ev) {
   let target = c ? { lat: c.lat, lon: c.lon } : null;
   if (!target) {
     const n = norm(q);
-    const p = n && (S.places.find((x) => norm(x.name) === n) || S.places.find((x) => norm(x.name).includes(n)));
-    if (p) target = { lat: p.lat, lon: p.lon };
+    const pv = n && (S.provinces.find((x) => norm(x.name) === n) || S.provinces.find((x) => norm(x.name).replace(/^tp\. /, "") === n));
+    const p = !pv && n && (S.places.find((x) => norm(x.name) === n) || S.places.find((x) => norm(x.name).includes(n))
+      || S.provinces.find((x) => norm(x.name).includes(n)));
+    if (pv) { target = { lat: pv.lat, lon: pv.lon }; S.handle.fitTo(pv.bbox); }
+    else if (p) target = { lat: p.lat, lon: p.lon };
   }
   const i = target ? nearestCell(target.lat, target.lon) : null;
   $("search-msg").textContent = i === null ? t("ctl.search.none") : "";
@@ -391,19 +395,23 @@ async function setState(patch, { fromHash = false } = {}) {
 
 async function main() {
   try {
-    const [vi, index, palettes, basemap, cells, places] = await Promise.all([
+    const [vi, index, palettes, basemap, cells, places, provinces, cellProv] = await Promise.all([
       getJSON("assets/i18n/vi.json"), getJSON("data/index.json"), getJSON("assets/palettes.json"),
-      getJSON("data/basemap.geojson"), getJSON("data/cells.geojson"), getJSON("data/places.json")]);
+      getJSON("data/basemap.geojson"), getJSON("data/cells.geojson"), getJSON("data/places.json"),
+      getJSON("data/provinces.geojson"), getJSON("data/cell_province.json")]);
     VI = vi;
-    Object.assign(S, { index, palettes, cells, places });
+    Object.assign(S, { index, palettes, cells, places, cellProv,
+      provinces: provinces.features.filter((f) => f.properties.kind === "province_label").map((f) => ({
+        name: f.properties.name, lon: f.geometry.coordinates[0], lat: f.geometry.coordinates[1], bbox: f.properties.bbox })) });
     document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
     $("q").placeholder = t("ctl.search");
     $("map").setAttribute("aria-label", t("map.aria"));
     S.meta = Object.fromEntries(S.index.layers.map((l) => [l.key, l]));
     S.cells.features.forEach((f, i) => S.byPos.set(posKey(f.properties.lat, f.properties.lon), i));
-    $("places").replaceChildren(...S.places.map((p) => { const o = document.createElement("option"); o.value = p.name; return o; }));
+    const names = [...new Set([...S.provinces.map((p) => p.name), ...S.places.map((p) => p.name)])];
+    $("places").replaceChildren(...names.map((n) => { const o = document.createElement("option"); o.value = n; return o; }));
     buildLayerList();
-    S.handle = initMap($("map"), { basemap, cells, places, palettes, theme: theme(), t });
+    S.handle = initMap($("map"), { basemap, cells, places, provinces, palettes, theme: theme(), t });
     S.handle.onCellClick((id) => setState({ cell: id }));
     window.FHE_ATLAS = { map: S.handle.map };
     getJSON("data/manifest.json").then((m) => {
